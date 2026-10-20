@@ -1,4 +1,4 @@
-import { ContactShadows, Environment, Float, OrbitControls, Text } from '@react-three/drei'
+import { ContactShadows, Environment, OrbitControls, Text } from '@react-three/drei'
 import { Canvas } from '@react-three/fiber'
 import { Suspense, useMemo, useState } from 'react'
 import { EQUIPMENT, TOTAL_UNITS } from '../data'
@@ -37,11 +37,11 @@ function Equipment({ item }: { item: InstalledEquipment }) {
       >
         <boxGeometry args={[2.48, height, 0.76]} />
         <meshStandardMaterial
-          color={hovered ? definition.accent : definition.color}
+          color={hovered ? '#e85f28' : definition.color}
           roughness={0.32}
           metalness={0.72}
-          emissive={definition.accent}
-          emissiveIntensity={hovered ? 0.16 : 0.015}
+          emissive="#e85f28"
+          emissiveIntensity={hovered ? 0.08 : 0}
         />
       </mesh>
 
@@ -53,7 +53,7 @@ function Equipment({ item }: { item: InstalledEquipment }) {
         return (
           <mesh key={index} position={[x, portY, 0.438]}>
             <boxGeometry args={[0.075, 0.055, 0.015]} />
-            <meshStandardMaterial color={item.type === 'patch' ? '#0b0d10' : definition.accent} emissive={definition.accent} emissiveIntensity={item.type === 'patch' ? 0 : 1.8} />
+            <meshStandardMaterial color={item.type === 'patch' ? '#0b0d10' : definition.accent} emissive={definition.accent} emissiveIntensity={item.type === 'patch' ? 0 : 0.7} />
           </mesh>
         )
       })}
@@ -76,7 +76,7 @@ function EmptySlot({ unit, available }: { unit: number; available: boolean }) {
   const install = useRackStore((state) => state.install)
   const selectedType = useRackStore((state) => state.selectedType)
   const y = RACK_BOTTOM + (unit - 1) * UNIT_HEIGHT + UNIT_HEIGHT / 2
-  const accent = EQUIPMENT[selectedType].accent
+  const accent = '#e85f28'
 
   return (
     <group position={[0, y, 0.035]}>
@@ -99,14 +99,14 @@ function EmptySlot({ unit, available }: { unit: number; available: boolean }) {
       >
         <boxGeometry args={[2.45, UNIT_HEIGHT - 0.028, 0.72]} />
         <meshStandardMaterial
-          color={hovered ? accent : '#11171d'}
+          color={hovered ? accent : '#343633'}
           transparent
-          opacity={hovered ? 0.64 : 0.3}
+          opacity={hovered ? 0.72 : 0.24}
           roughness={0.65}
           metalness={0.35}
         />
       </mesh>
-      <Text position={[-1.38, 0, 0.41]} fontSize={0.075} color={hovered ? accent : '#53606c'} anchorX="right">
+      <Text position={[-1.38, 0, 0.41]} fontSize={0.075} color={hovered ? accent : '#65655f'} anchorX="right">
         {unit}U
       </Text>
     </group>
@@ -130,24 +130,23 @@ function Rack() {
   const rackHeight = TOTAL_UNITS * UNIT_HEIGHT
 
   return (
-    <Float speed={0.7} rotationIntensity={0.025} floatIntensity={0.08}>
       <group rotation={[0, -0.12, 0]}>
         <mesh position={[0, 0, -0.42]} receiveShadow>
           <boxGeometry args={[2.78, rackHeight + 0.32, 0.1]} />
-          <meshStandardMaterial color="#080b0f" metalness={0.8} roughness={0.3} />
+          <meshStandardMaterial color="#171918" metalness={0.8} roughness={0.32} />
         </mesh>
 
         {[-1.38, 1.38].map((x) => (
           <mesh key={x} position={[x, 0, 0]} castShadow>
             <boxGeometry args={[0.13, rackHeight + 0.42, 0.96]} />
-            <meshStandardMaterial color="#242b31" metalness={0.88} roughness={0.26} />
+            <meshStandardMaterial color="#323431" metalness={0.88} roughness={0.28} />
           </mesh>
         ))}
 
         {[-1, 1].map((direction) => (
           <mesh key={direction} position={[0, direction * (rackHeight / 2 + 0.15), 0]} castShadow>
             <boxGeometry args={[2.9, 0.16, 1]} />
-            <meshStandardMaterial color="#242b31" metalness={0.88} roughness={0.26} />
+            <meshStandardMaterial color="#323431" metalness={0.88} roughness={0.28} />
           </mesh>
         ))}
 
@@ -159,25 +158,23 @@ function Rack() {
 
         {installed.map((item) => <Equipment key={item.id} item={item} />)}
       </group>
-    </Float>
   )
 }
 
 export default function RackScene() {
   return (
     <Canvas shadows dpr={[1, 1.75]} camera={{ position: [5.8, 2.2, 7.2], fov: 36 }}>
-      <color attach="background" args={['#080b10']} />
-      <fog attach="fog" args={['#080b10', 10, 19]} />
-      <ambientLight intensity={0.65} />
-      <spotLight position={[4, 7, 6]} angle={0.38} penumbra={0.65} intensity={40} color="#b7d8ff" castShadow />
-      <pointLight position={[-4, 0, 3]} intensity={14} color="#2ed6c2" />
-      <pointLight position={[3, -2, -2]} intensity={10} color="#795cff" />
+      <color attach="background" args={['#deddd7']} />
+      <fog attach="fog" args={['#deddd7', 11, 20]} />
+      <ambientLight intensity={1.25} />
+      <spotLight position={[4, 7, 6]} angle={0.42} penumbra={0.7} intensity={34} color="#fff8e9" castShadow />
+      <pointLight position={[-4, 1, 4]} intensity={7} color="#ffffff" />
       <Suspense fallback={null}>
         <Rack />
-        <Environment preset="city" environmentIntensity={0.18} />
+        <Environment preset="studio" environmentIntensity={0.42} />
       </Suspense>
-      <ContactShadows position={[0, -2.52, 0]} opacity={0.6} scale={10} blur={2.4} far={5} color="#000000" />
-      <gridHelper args={[18, 18, '#18242e', '#10171d']} position={[0, -2.48, 0]} />
+      <ContactShadows position={[0, -2.52, 0]} opacity={0.28} scale={10} blur={2.7} far={5} color="#24231f" />
+      <gridHelper args={[18, 18, '#bcbab2', '#d3d1ca']} position={[0, -2.48, 0]} />
       <OrbitControls makeDefault enablePan={false} minDistance={6} maxDistance={11} minPolarAngle={0.85} maxPolarAngle={1.9} target={[0, 0, 0]} />
     </Canvas>
   )
